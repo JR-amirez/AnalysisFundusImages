@@ -1,0 +1,1068 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Datos</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(169, 57, 30, 0.4);
+            padding: 40px;
+            width: 100%;
+            max-width: 980px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .image-upload {
+            border: 2px dashed #ccc;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .image-upload:hover {
+            border-color: #a9391e;
+            background: #fdf5f3;
+        }
+
+        .image-upload.has-image {
+            border-style: solid;
+            border-color: #A9391E;
+        }
+
+        #image-preview {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            display: none;
+            margin: 0 auto;
+        }
+
+        .upload-text {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #ccc;
+            margin-bottom: 10px;
+        }
+
+        .upload-icon .img-svg {
+            color: #A9391E;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-section {
+            margin: 28px 0 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ececec;
+        }
+
+        .section-title {
+            margin-bottom: 16px;
+            color: #A9391E;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        #data-form {
+            display: grid;
+            grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.95fr);
+            gap: 24px;
+            align-items: start;
+        }
+
+        .field-primary-grid {
+            grid-column: 1;
+            grid-row: 1;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 24px;
+        }
+
+        .field-secondary-left {
+            grid-column: 1;
+            grid-row: 2;
+            display: grid;
+            gap: 24px;
+        }
+
+        .field-primary-grid > .form-group,
+        .field-secondary-left > .form-group,
+        .question-item,
+        .field-image {
+            border: 1px solid #ececec;
+            border-radius: 14px;
+            padding: 22px;
+            background: #fcfcfc;
+            margin-bottom: 0;
+        }
+
+        .field-primary-grid > .form-group {
+            margin-bottom: 0;
+        }
+
+        .field-image {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        .field-image .image-upload {
+            margin-bottom: 0;
+        }
+
+        .field-questions {
+            grid-column: 2;
+            grid-row: 2;
+            height: 100%;
+        }
+
+        .question-grid {
+            display: grid;
+            gap: 22px;
+            height: 100%;
+        }
+
+        .question-item {
+            display: grid;
+            gap: 12px;
+            height: 100%;
+        }
+
+        .question-label {
+            color: #444;
+            font-weight: 600;
+            line-height: 1.35;
+        }
+
+        .answer-options {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        #data-form > button {
+            grid-column: 1 / -1;
+            margin-top: 0;
+        }
+
+        .sex-options {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #444;
+            font-weight: 500;
+        }
+
+        input:not([type="checkbox"]), select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input:not([type="checkbox"]):focus, select:focus {
+            outline: none;
+            border-color: #A9391E;
+            box-shadow: 0 0 0 3px rgba(169, 57, 30, 0.15);
+        }
+
+        input[readonly] {
+            background: #f5f5f5;
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        .help-text {
+            display: block;
+            margin-top: 6px;
+            color: #777;
+            font-size: 0.85rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .checkbox-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .checkbox-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 14px 16px;
+            background: white;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+
+        .checkbox-input {
+            width: 18px;
+            height: 18px;
+            accent-color: #A9391E;
+            flex-shrink: 0;
+        }
+
+        .checkbox-text {
+            color: #444;
+            font-weight: 500;
+            line-height: 1.35;
+        }
+
+        .checkbox-card.is-selected {
+            border-color: #A9391E;
+            background: #fdf5f3;
+            box-shadow: 0 0 0 3px rgba(169, 57, 30, 0.08);
+        }
+
+        @media (max-width: 900px) {
+            #data-form {
+                grid-template-columns: 1fr;
+            }
+
+            .field-primary-grid,
+            .field-secondary-left,
+            .field-questions,
+            .field-image,
+            #data-form > button {
+                grid-column: auto;
+                grid-row: auto;
+            }
+
+            .answer-options {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #A9391E;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(169, 57, 30, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .unit {
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        /* Modal de progreso */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-title {
+            font-size: 1.4rem;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        .progress-container {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #A9391E, #d45a3a);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        /* Pantalla de resultados */
+        .results-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(169, 57, 30, 0.4);
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            display: none;
+        }
+
+        .results-container.active {
+            display: block;
+        }
+
+        .container.hidden {
+            display: none;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .results-header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .results-image {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .results-image img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .metric-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+
+        .metric-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #A9391E;
+        }
+
+        .classification-section {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .classification-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .classification-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .classification-value.sano {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .classification-value.sospecha-hipertensiva {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .classification-value.alto-riesgo-hipertensiva {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .classification-value.sospecha-diabetica {
+            background: #ffe5b4;
+            color: #8b4513;
+        }
+
+        .classification-value.alto-riesgo-diabetica {
+            background: #ffcccc;
+            color: #8b0000;
+        }
+
+        .classification-value.indeterminado {
+            background: #e2e3e5;
+            color: #41464b;
+        }
+
+        .btn-new-analysis {
+            width: 100%;
+            padding: 14px;
+            background: #A9391E;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-new-analysis:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(169, 57, 30, 0.4);
+        }
+
+        @media (max-width: 560px) {
+            .container,
+            .results-container,
+            .modal-content {
+                padding: 24px;
+            }
+
+            .sex-options,
+            .checkbox-row,
+            .field-primary-grid,
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Registro de Datos</h1>
+
+        <form id="data-form">
+            <div class="field-image">
+                <div class="section-title">Carga de imagen</div>
+                <div class="image-upload" id="drop-zone">
+                <input type="file" id="file-input" accept="image/*">
+                <div class="upload-icon"><img src="./upload.svg" class="img-svg"></div>
+                <p class="upload-text">Haz clic o arrastra una imagen aquí</p>
+                    <img id="image-preview" alt="Vista previa">
+                </div>
+            </div>
+            <div class="field-primary-grid">
+                <div class="form-group field-sex">
+                    <div class="section-title">Sexo</div>
+                    <div class="sex-options">
+                        <div class="checkbox-card" id="sexo-masculino-card">
+                            <label for="sexo-masculino" class="checkbox-label">
+                                <input type="checkbox" id="sexo-masculino" name="sexo" value="masculino" class="checkbox-input sexo-input">
+                                <span class="checkbox-text">M</span>
+                            </label>
+                        </div>
+
+                        <div class="checkbox-card" id="sexo-femenino-card">
+                            <label for="sexo-femenino" class="checkbox-label">
+                                <input type="checkbox" id="sexo-femenino" name="sexo" value="femenino" class="checkbox-input sexo-input">
+                                <span class="checkbox-text">F</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group field-age">
+                    <label for="edad" class="section-title">Edad <span class="unit">(años)</span></label>
+                    <input type="number" id="edad" name="edad" min="1" max="120" required placeholder="Ej: 25">
+                </div>
+
+                <div class="form-group field-height">
+                    <label for="estatura" class="section-title">Estatura <span class="unit">(cm)</span></label>
+                    <input type="number" id="estatura" name="estatura" min="50" max="250" required placeholder="Ej: 170">
+                </div>
+
+                <div class="form-group field-weight">
+                    <label for="peso" class="section-title">Peso <span class="unit">(kg)</span></label>
+                    <input type="number" id="peso" name="peso" min="1" max="500" step="0.1" required placeholder="Ej: 70.5">
+                </div>
+            </div>
+
+            <div class="field-secondary-left">
+                <div class="form-group field-imc">
+                    <label for="imc" class="section-title">IMC</label>
+                    <input type="text" id="imc" name="imc" readonly placeholder="Se calcula automaticamente">
+                    <span class="help-text">El IMC se calcula automaticamente con la estatura y el peso.</span>
+                </div>
+
+                <div class="form-group field-lifestyle">
+                    <label for="estilo-vida" class="section-title">Estilo de vida</label>
+                    <select id="estilo-vida" name="estiloVida" required>
+                        <option value="">Seleccionar...</option>
+                        <option value="consumo-alcohol">Consumo de alcohol</option>
+                        <option value="tabaquismo">Tabaquismo</option>
+                        <option value="dieta-alta-sodio">Dieta alta en sodio</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="field-questions">
+                <div class="question-grid">
+                    <div class="question-item">
+                        <div class="question-label section-title">Mantiene control de presi&oacute;n arterial</div>
+                        <div class="answer-options">
+                            <div class="checkbox-card" id="control-presion-si-card">
+                                <label for="control-presion-si" class="checkbox-label">
+                                    <input type="checkbox" id="control-presion-si" class="checkbox-input question-option" data-group="control-presion" value="si">
+                                    <span class="checkbox-text">S&iacute;</span>
+                                </label>
+                            </div>
+
+                            <div class="checkbox-card" id="control-presion-no-card">
+                                <label for="control-presion-no" class="checkbox-label">
+                                    <input type="checkbox" id="control-presion-no" class="checkbox-input question-option" data-group="control-presion" value="no">
+                                    <span class="checkbox-text">No</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question-item">
+                        <div class="question-label">Mantiene control de glucosa</div>
+                        <div class="answer-options">
+                            <div class="checkbox-card" id="control-glucosa-si-card">
+                                <label for="control-glucosa-si" class="checkbox-label">
+                                    <input type="checkbox" id="control-glucosa-si" class="checkbox-input question-option" data-group="control-glucosa" value="si">
+                                    <span class="checkbox-text">S&iacute;</span>
+                                </label>
+                            </div>
+
+                            <div class="checkbox-card" id="control-glucosa-no-card">
+                                <label for="control-glucosa-no" class="checkbox-label">
+                                    <input type="checkbox" id="control-glucosa-no" class="checkbox-input question-option" data-group="control-glucosa" value="no">
+                                    <span class="checkbox-text">No</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit">Enviar Datos</button>
+        </form>
+    </div>
+
+    <!-- Modal de Progreso -->
+    <div class="modal-overlay" id="progress-modal">
+        <div class="modal-content">
+            <h2 class="modal-title" id="modal-title">Preprocesamiento...</h2>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <p class="progress-text" id="progress-text">0%</p>
+        </div>
+    </div>
+
+    <!-- Pantalla de Resultados -->
+    <div class="results-container" id="results-container">
+        <div class="results-header">
+            <h1>Resultados del Análisis</h1>
+        </div>
+
+        <div class="results-image">
+            <img id="result-image" alt="Imagen analizada">
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">CRAE</div>
+                <div class="metric-value" id="result-crae">--</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">CRVE</div>
+                <div class="metric-value" id="result-crve">--</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">AVR</div>
+                <div class="metric-value" id="result-avr">--</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Tortuosidad</div>
+                <div class="metric-value" id="result-tortuosity">--</div>
+            </div>
+        </div>
+
+        <div class="classification-section">
+            <div class="classification-label">Clasificación</div>
+            <div class="classification-value" id="result-classification">--</div>
+        </div>
+
+        <button class="btn-new-analysis" id="btn-new-analysis">Nuevo Análisis</button>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://8000-01kpadax9fekmyjg60ptv40nsz.cloudspaces.litng.ai';
+        const SEQUENTIAL_ENDPOINT = `${API_BASE_URL}/pipeline/sequential`;
+
+        const classMap = {
+            'Patr\u00f3n microvascular normal': 'sano',
+            'Sano': 'sano',
+            'Sospecha de retinopat\u00eda hipertensiva': 'sospecha-hipertensiva',
+            'Alto riesgo de retinopat\u00eda hipertensiva': 'alto-riesgo-hipertensiva',
+            'Sospecha de retinopat\u00eda diab\u00e9tica': 'sospecha-diabetica',
+            'Alto riesgo de retinopat\u00eda diab\u00e9tica': 'alto-riesgo-diabetica',
+            'Perfil mixto o indeterminado': 'indeterminado'
+        };
+
+        let currentFile = null;
+        let currentFileName = '';
+        let progressIntervalId = null;
+
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const imagePreview = document.getElementById('image-preview');
+        const uploadText = dropZone.querySelector('.upload-text');
+        const uploadIcon = dropZone.querySelector('.upload-icon');
+        const progressModal = document.getElementById('progress-modal');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const modalTitle = document.getElementById('modal-title');
+        const formContainer = document.querySelector('.container');
+        const resultsContainer = document.getElementById('results-container');
+        const estaturaInput = document.getElementById('estatura');
+        const pesoInput = document.getElementById('peso');
+        const imcInput = document.getElementById('imc');
+        const sexoInputs = Array.from(document.querySelectorAll('.sexo-input'));
+        const questionOptionInputs = Array.from(document.querySelectorAll('.question-option'));
+
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#A9391E';
+            dropZone.style.background = '#fdf5f3';
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.style.borderColor = '#ccc';
+            dropZone.style.background = '#fafafa';
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type.startsWith('image/')) {
+                handleFile(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            currentFile = file;
+            currentFileName = file.name;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+                uploadText.style.display = 'none';
+                uploadIcon.style.display = 'none';
+                dropZone.classList.add('has-image');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function updateImc() {
+            const estaturaCm = Number(estaturaInput.value);
+            const pesoKg = Number(pesoInput.value);
+
+            if (!estaturaCm || !pesoKg) {
+                imcInput.value = '';
+                return;
+            }
+
+            const estaturaM = estaturaCm / 100;
+            const imc = pesoKg / (estaturaM * estaturaM);
+
+            imcInput.value = Number.isFinite(imc) ? imc.toFixed(2) : '';
+        }
+
+        function syncSexoCards() {
+            sexoInputs.forEach((input) => {
+                const card = document.getElementById(`${input.id}-card`);
+                if (card) {
+                    card.classList.toggle('is-selected', input.checked);
+                }
+            });
+        }
+
+        function getSexoValue() {
+            const selected = sexoInputs.find((input) => input.checked);
+            return selected ? selected.value : '';
+        }
+
+        function syncQuestionCards() {
+            questionOptionInputs.forEach((input) => {
+                const card = document.getElementById(`${input.id}-card`);
+                if (card) {
+                    card.classList.toggle('is-selected', input.checked);
+                }
+            });
+        }
+
+        function getQuestionValue(groupName) {
+            const selected = questionOptionInputs.find((input) => input.dataset.group === groupName && input.checked);
+            return selected ? selected.value : '';
+        }
+
+        sexoInputs.forEach((input) => {
+            input.addEventListener('change', () => {
+                if (input.checked) {
+                    sexoInputs.forEach((otherInput) => {
+                        if (otherInput !== input) {
+                            otherInput.checked = false;
+                        }
+                    });
+                }
+
+                syncSexoCards();
+            });
+        });
+
+        questionOptionInputs.forEach((input) => {
+            input.addEventListener('change', () => {
+                if (input.checked) {
+                    questionOptionInputs.forEach((otherInput) => {
+                        if (otherInput !== input && otherInput.dataset.group === input.dataset.group) {
+                            otherInput.checked = false;
+                        }
+                    });
+                }
+
+                syncQuestionCards();
+            });
+        });
+
+        syncSexoCards();
+        syncQuestionCards();
+
+        estaturaInput.addEventListener('input', updateImc);
+        pesoInput.addEventListener('input', updateImc);
+
+        function resetProgressState() {
+            if (progressIntervalId) {
+                clearInterval(progressIntervalId);
+                progressIntervalId = null;
+            }
+
+            progressBar.style.width = '0%';
+            progressText.textContent = '0%';
+            modalTitle.textContent = 'Preprocesamiento...';
+        }
+
+        function startProgressState() {
+            resetProgressState();
+
+            const steps = [
+                { limit: 25, title: 'Cargando imagen...' },
+                { limit: 50, title: 'Preprocesamiento...' },
+                { limit: 75, title: 'Segmentación...' },
+                { limit: 90, title: 'Extracción de características...' },
+                { limit: 98, title: 'Aplicación de reglas...' }
+            ];
+
+            let progress = 6;
+            progressBar.style.width = progress + '%';
+            progressText.textContent = Math.round(progress) + '%';
+
+            progressIntervalId = setInterval(() => {
+                const step = steps.find((item) => progress < item.limit) || steps[steps.length - 1];
+                modalTitle.textContent = step.title;
+
+                const increment = Math.random() * 8 + 2;
+                progress = Math.min(progress + increment, 98);
+                progressBar.style.width = progress + '%';
+                progressText.textContent = Math.round(progress) + '%';
+            }, 350);
+        }
+
+        function completeProgressState() {
+            if (progressIntervalId) {
+                clearInterval(progressIntervalId);
+                progressIntervalId = null;
+            }
+
+            modalTitle.textContent = 'Analisis completado...';
+            progressBar.style.width = '100%';
+            progressText.textContent = '100%';
+        }
+
+        function formatMetric(value, decimals = 2) {
+            const numericValue = Number(value);
+            if (!Number.isFinite(numericValue)) {
+                return '--';
+            }
+
+            return numericValue.toFixed(decimals);
+        }
+
+        function normalizeSequentialResponse(apiResponse) {
+            const biomarkers = apiResponse?.pvbm?.biomarkers || {};
+            const classification = apiResponse?.fuzzy_tree?.classification || {};
+            const classificationValue =
+                classification.etiqueta ||
+                classification.best_rule_soft_label ||
+                'Perfil mixto o indeterminado';
+
+            return {
+                crae: formatMetric(biomarkers.craek_um ?? biomarkers.craek, 2),
+                crve: formatMetric(biomarkers.crvek_um ?? biomarkers.crvek, 2),
+                avr: formatMetric(biomarkers.avr_knudtson, 4),
+                tortuosity: formatMetric(biomarkers.median_tortuosity, 4),
+                classification: {
+                    value: classificationValue,
+                    class: classMap[classificationValue] || 'indeterminado'
+                }
+            };
+        }
+
+        async function extractErrorMessage(response) {
+            try {
+                const payload = await response.json();
+                if (typeof payload?.detail === 'string') {
+                    return payload.detail;
+                }
+                if (Array.isArray(payload?.detail)) {
+                    return payload.detail.map((item) => item.msg || JSON.stringify(item)).join(', ');
+                }
+                if (typeof payload?.message === 'string') {
+                    return payload.message;
+                }
+            } catch (error) {
+                console.error('No fue posible leer el detalle del error.', error);
+            }
+
+            return `HTTP ${response.status}`;
+        }
+
+        async function runSequentialPipeline(file) {
+            const requestData = new FormData();
+            requestData.append('file', file, file.name);
+
+            const response = await fetch(SEQUENTIAL_ENDPOINT, {
+                method: 'POST',
+                body: requestData
+            });
+
+            if (!response.ok) {
+                throw new Error(await extractErrorMessage(response));
+            }
+
+            return response.json();
+        }
+
+        // Mostrar resultados
+        function showResults(results, imageSrc) {
+            document.getElementById('result-image').src = imageSrc;
+            document.getElementById('result-crae').textContent = results.crae;
+            document.getElementById('result-crve').textContent = results.crve;
+            document.getElementById('result-avr').textContent = results.avr;
+            document.getElementById('result-tortuosity').textContent = results.tortuosity;
+
+            const classificationEl = document.getElementById('result-classification');
+            classificationEl.textContent = results.classification.value;
+            classificationEl.className = 'classification-value ' + results.classification.class;
+
+            progressModal.classList.remove('active');
+            formContainer.classList.add('hidden');
+            resultsContainer.classList.add('active');
+        }
+
+        // Reiniciar para nuevo anÃ¡lisis
+        document.getElementById('btn-new-analysis').addEventListener('click', () => {
+            resultsContainer.classList.remove('active');
+            formContainer.classList.remove('hidden');
+
+            // Resetear formulario
+            document.getElementById('data-form').reset();
+            currentFile = null;
+            currentFileName = '';
+            fileInput.value = '';
+            syncSexoCards();
+            syncQuestionCards();
+            imagePreview.src = '';
+            imagePreview.style.display = 'none';
+            uploadText.style.display = 'block';
+            uploadIcon.style.display = 'block';
+            dropZone.classList.remove('has-image');
+
+            // Resetear barra de progreso
+            resetProgressState();
+        });
+
+        document.getElementById('data-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!currentFile || !imagePreview.src || imagePreview.src === '') {
+                alert('Por favor, carga una imagen para analizar.');
+                return;
+            }
+
+            const sexo = getSexoValue();
+            if (!sexo) {
+                alert('Por favor, selecciona el sexo.');
+                return;
+            }
+
+            const controlPresionArterial = getQuestionValue('control-presion');
+            if (!controlPresionArterial) {
+                alert('Por favor, responde la pregunta sobre control de presión arterial.');
+                return;
+            }
+
+            const controlGlucosa = getQuestionValue('control-glucosa');
+            if (!controlGlucosa) {
+                alert('Por favor, responde la pregunta sobre control de glucosa.');
+                return;
+            }
+
+            updateImc();
+
+            const formValues = {
+                imagen: imagePreview.src,
+                sexo,
+                edad: document.getElementById('edad').value,
+                estatura: document.getElementById('estatura').value,
+                peso: document.getElementById('peso').value,
+                imc: imcInput.value,
+                estiloVida: document.getElementById('estilo-vida').value,
+                controlPresionArterial,
+                controlGlucosa
+            };
+
+            console.log('Datos del formulario:', {
+                archivo: currentFile.name,
+                sexo: formValues.sexo,
+                edad: formValues.edad,
+                estatura: formValues.estatura,
+                peso: formValues.peso,
+                imc: formValues.imc,
+                estiloVida: formValues.estiloVida,
+                controlPresionArterial: formValues.controlPresionArterial,
+                controlGlucosa: formValues.controlGlucosa
+            });
+
+            // Mostrar modal de progreso
+            progressModal.classList.add('active');
+            startProgressState();
+
+            try {
+                const apiResponse = await runSequentialPipeline(currentFile);
+                const results = normalizeSequentialResponse(apiResponse);
+                completeProgressState();
+                showResults(results, formValues.imagen);
+            } catch (error) {
+                resetProgressState();
+                progressModal.classList.remove('active');
+                console.error('Error al consumir /pipeline/sequential:', error);
+                alert(`No fue posible completar el analisis para "${currentFileName}". ${error.message || 'Verifica la conexion con la API.'}`);
+            }
+        });
+    </script>
+</body>
+</html>
