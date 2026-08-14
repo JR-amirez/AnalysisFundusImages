@@ -693,6 +693,8 @@
 
     <script>
         const SEQUENTIAL_ENDPOINT = '/api/analyze';
+        const ANALYSIS_STATUS_ENDPOINT = '/api/analyze/status';
+        const ANALYSIS_TIMEOUT_MS = 14 * 60 * 1000;
 
         const classMap = {
             'Patr\u00f3n microvascular normal': 'sano',
@@ -955,7 +957,38 @@
                 throw new Error(await extractErrorMessage(response));
             }
 
-            return response.json();
+            const job = await response.json();
+            if (response.status !== 202 || !job?.job_id) {
+                return job;
+            }
+
+            const deadline = Date.now() + ANALYSIS_TIMEOUT_MS;
+            let pollDelayMs = 1500;
+
+            while (Date.now() < deadline) {
+                await new Promise((resolve) => setTimeout(resolve, pollDelayMs));
+
+                const statusResponse = await fetch(
+                    `${ANALYSIS_STATUS_ENDPOINT}?job_id=${encodeURIComponent(job.job_id)}`,
+                    { headers: { 'Accept': 'application/json' } }
+                );
+
+                if (!statusResponse.ok) {
+                    throw new Error(await extractErrorMessage(statusResponse));
+                }
+
+                const statusPayload = await statusResponse.json();
+                if (statusPayload.status === 'completed') {
+                    return statusPayload.result;
+                }
+                if (statusPayload.status === 'failed') {
+                    throw new Error(statusPayload.detail || 'El analisis no pudo completarse.');
+                }
+
+                pollDelayMs = Math.min(5000, Math.round(pollDelayMs * 1.35));
+            }
+
+            throw new Error('El analisis tardo demasiado en completarse. Intenta nuevamente.');
         }
 
         // Mostrar resultados
