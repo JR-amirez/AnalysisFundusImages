@@ -903,12 +903,26 @@
         }
 
         function normalizeSequentialResponse(apiResponse) {
-            const biomarkers = apiResponse?.pvbm?.biomarkers || {};
-            const classification = apiResponse?.fuzzy_tree?.classification || {};
+            const payloadCandidates = [
+                apiResponse,
+                apiResponse?.result,
+                apiResponse?.output,
+                apiResponse?.data
+            ];
+            const payload = payloadCandidates.find((candidate) =>
+                candidate?.pvbm?.biomarkers || candidate?.fuzzy_tree?.classification
+            );
+
+            if (!payload) {
+                throw new Error('RunPod completo el analisis, pero no devolvio biomarcadores ni clasificacion.');
+            }
+
+            const biomarkers = payload?.pvbm?.biomarkers || {};
+            const classification = payload?.fuzzy_tree?.classification || {};
             const classificationValue =
                 classification.etiqueta ||
                 classification.best_rule_soft_label ||
-                'Perfil mixto o indeterminado';
+                'Clasificacion no disponible';
 
             return {
                 crae: formatMetric(biomarkers.craek_um ?? biomarkers.craek, 2),
