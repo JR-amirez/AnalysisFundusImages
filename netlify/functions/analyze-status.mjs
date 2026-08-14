@@ -5,23 +5,21 @@ import {
 } from '../../lib/retinal-jobs.mjs';
 
 function json(statusCode, payload, extraHeaders = {}) {
-    return {
-        statusCode,
+    return Response.json(payload, {
+        status: statusCode,
         headers: {
-            'Content-Type': 'application/json; charset=utf-8',
             'Cache-Control': 'no-store',
             ...extraHeaders
-        },
-        body: JSON.stringify(payload)
-    };
+        }
+    });
 }
 
-export async function handler(event) {
-    if (event.httpMethod !== 'GET') {
+export default async function handler(request) {
+    if (request.method !== 'GET') {
         return json(405, { detail: 'Metodo no permitido.' }, { 'Allow': 'GET' });
     }
 
-    const jobId = event.queryStringParameters?.job_id;
+    const jobId = new URL(request.url).searchParams.get('job_id');
     if (!isValidJobId(jobId)) {
         return json(400, { detail: 'Identificador de analisis invalido.' });
     }

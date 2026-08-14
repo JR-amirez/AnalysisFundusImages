@@ -10,31 +10,21 @@ import {
 import { MAX_UPLOAD_BYTES } from '../../api/analyze.js';
 
 function json(statusCode, payload, extraHeaders = {}) {
-    return {
-        statusCode,
+    return Response.json(payload, {
+        status: statusCode,
         headers: {
-            'Content-Type': 'application/json; charset=utf-8',
             'Cache-Control': 'no-store',
             ...extraHeaders
-        },
-        body: JSON.stringify(payload)
-    };
+        }
+    });
 }
 
-function currentSiteUrl(event) {
-    const host = event.headers?.host || event.headers?.Host;
-    if (!host) {
-        throw new Error('No fue posible determinar el host del despliegue.');
-    }
-    return `https://${host}`;
-}
-
-export async function handler(event) {
-    if (event.httpMethod === 'GET') {
+export default async function handler(request) {
+    if (request.method === 'GET') {
         return json(200, { status: 'ok', mode: 'background' });
     }
 
-    if (event.httpMethod !== 'POST') {
+    if (request.method !== 'POST') {
         return json(405, { detail: 'Metodo no permitido.' }, { 'Allow': 'GET, POST' });
     }
 
@@ -42,14 +32,17 @@ export async function handler(event) {
         return json(503, { detail: 'RUNPOD_API_KEY no esta configurada en el servidor.' });
     }
 
-    const contentType = event.headers?.['content-type'] || event.headers?.['Content-Type'] || '';
+    const contentType = request.headers.get('content-type') || '';
     if (!contentType.toLowerCase().startsWith('multipart/form-data;')) {
         return json(415, { detail: 'Debes enviar la imagen como multipart/form-data.' });
     }
 
-    const requestBody = event.isBase64Encoded
-        ? Buffer.from(event.body || '', 'base64')
-        : Buffer.from(event.body || '', 'utf8');
+    const contentLength = Number(request.headers.get('content-length') || 0);
+    if (contentLength > MAX_UPLOAD_BYTES) {
+        return json(413, { detail: 'La imagen supera el limite de 30 MB.' });
+    }
+
+    const requestBody = Buffer.from(await request.arrayBuffer());
 
     if (requestBody.length > MAX_UPLOAD_BYTES) {
         return json(413, { detail: 'La imagen supera el limite de 30 MB.' });
@@ -71,7 +64,7 @@ export async function handler(event) {
         });
 
         const backgroundResponse = await fetch(
-            `${currentSiteUrl(event)}/.netlify/functions/analyze-background`,
+            `${new URL(request.url).origin}/.netlify/functions/analyze-background`,
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

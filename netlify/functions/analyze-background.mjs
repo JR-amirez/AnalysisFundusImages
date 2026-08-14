@@ -16,12 +16,12 @@ function safeDetail(payload, fallback) {
     return fallback;
 }
 
-export async function handler(event) {
+export default async function handler(request) {
     const store = getJobStore();
     let jobId;
 
     try {
-        const payload = JSON.parse(event.body || '{}');
+        const payload = await request.json();
         jobId = payload.job_id;
         if (!isValidJobId(jobId)) {
             throw new Error('Identificador de analisis invalido.');
