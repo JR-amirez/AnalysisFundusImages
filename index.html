@@ -692,8 +692,7 @@
     </div>
 
     <script>
-        const API_BASE_URL = 'https://z5gcw5yq25fs4k.api.runpod.ai';
-        const SEQUENTIAL_ENDPOINT = `${API_BASE_URL}/pipeline/sequential`;
+        const SEQUENTIAL_ENDPOINT = '/api/analyze';
 
         const classMap = {
             'Patr\u00f3n microvascular normal': 'sano',
@@ -946,6 +945,9 @@
 
             const response = await fetch(SEQUENTIAL_ENDPOINT, {
                 method: 'POST',
+                headers: {
+                    'Accept': 'application/json'
+                },
                 body: requestData
             });
 

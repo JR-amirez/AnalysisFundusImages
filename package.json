@@ -1,0 +1,12 @@
+{
+  "name": "analysis-fundus-images",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "netlify dev",
+    "dev:vercel": "vercel dev"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
